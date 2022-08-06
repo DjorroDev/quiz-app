@@ -2,6 +2,14 @@
 
 This template should help get you started developing with Vue 3 in Vite.
 
+## TODO
+- Make user authentication
+- Update and Delete quiz
+- History after completed a quiz
+- Create flash message
+- refactoring code become components
+- Add Loading bar
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
