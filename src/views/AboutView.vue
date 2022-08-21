@@ -16,11 +16,11 @@
 
 <style>
 a {
-  display: block;
   margin-bottom: 10px;
 }
 
 .about-btn {
+  display: block;
   font-size: large;
 }
 </style>
