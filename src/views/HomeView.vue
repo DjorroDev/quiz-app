@@ -6,8 +6,10 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
 
 const quizzes = ref([]);
+const isLoading = ref(true);
 
 onMounted(async () => {
+  isLoading.value = true;
   const querySnapshot = await getDocs(collection(db, "quizzes"));
   let fbQuizzes = [];
   querySnapshot.forEach((doc) => {
@@ -19,36 +21,11 @@ onMounted(async () => {
       title: doc.data().title,
     };
     fbQuizzes.push(quiz);
+    isLoading.value = false;
   });
   quizzes.value = fbQuizzes;
   // console.log(fbQuizzes);
 });
-// console.log(quizzes);
-
-// const quizzes = [
-//   {
-//     title: "Trivia Quiz",
-//     description: "lorem ipsum dolor sit amet",
-//     author: "Marco",
-//   },
-//   {
-//     title: "Animal Quiz",
-//     description: "lorem ipsum dolor sit amet",
-//     author: "Budi",
-//   },
-//   {
-//     title: "How smart are you?",
-//     description:
-//       "lorem ipsum dolor sit amet, Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nemo ducimus odit modi eum. Voluptates esse iure libero doloribus dolor?",
-//     author: "Budi",
-//   },
-//   {
-//     title: "Pante Quiz",
-//     description:
-//       "lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo ducimus odit modi eum. Voluptates esse iure libero doloribus dolor?",
-//     author: "Bapakkau",
-//   },
-// ];
 </script>
 
 <template>
@@ -58,6 +35,13 @@ onMounted(async () => {
     </el-col>
     <el-row>
       <el-col>
+        <el-skeleton animated :loading="isLoading" :count="3">
+          <template #template>
+            <div class="border">
+              <el-skeleton-item class="skeleton" variant="rect" />
+            </div>
+          </template>
+        </el-skeleton>
         <el-card
           v-for="(quiz, i) in quizzes"
           :key="i"
@@ -96,6 +80,15 @@ h1 {
   font-style: bold;
 }
 
+.border {
+  margin: 15px 0 15px 0;
+}
+
+.skeleton {
+  width: 370px;
+  height: 120px;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -125,6 +118,10 @@ h1 {
     margin-bottom: 16px;
     justify-content: center;
     width: 600px;
+  }
+  .skeleton {
+    width: 600px;
+    height: 120px;
   }
 }
 </style>
