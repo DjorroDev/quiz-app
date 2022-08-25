@@ -1,11 +1,12 @@
 <script setup>
-import { reactive } from "vue";
-import { RouterLink } from "vue-router";
-
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/firebase";
+// import { async } from "@firebase/util";
+// import {FormRules} from "element-plus";
 
-// Add a new document in collection "cities"
+const router = useRouter();
 
 const form = reactive({
   title: "",
@@ -20,11 +21,51 @@ const form = reactive({
   ],
 });
 
-async function submit() {
-  await addDoc(collection(db, "quizzes"), form);
-}
+const ruleFormRef = ref();
 
-function panteq() {
+const rules = reactive({
+  title: [
+    {
+      required: true,
+      message: "This field is required",
+      trigger: "blur",
+    },
+    {
+      max: 60,
+      message: "Length no more than 60",
+      trigger: "blur",
+    },
+  ],
+  author: [
+    {
+      required: true,
+      message: "This field is required",
+      trigger: "blur",
+    },
+  ],
+  description: [
+    {
+      required: true,
+      message: "This field is required",
+      trigger: "blur",
+    },
+  ],
+});
+
+const submit = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      // console.log("submit!");
+      addDoc(collection(db, "quizzes"), form);
+      router.push("/");
+    } else {
+      console.log("error submit!", fields);
+    }
+  });
+};
+
+function newQuestion() {
   form.body.push({
     answer: "",
     choices: [""],
@@ -33,7 +74,7 @@ function panteq() {
 }
 
 function newChoice(index) {
-  console.log(form.body[0].choices);
+  // console.log(form.body[0].choices);
   form.body[index].choices.push("");
 }
 
@@ -49,21 +90,24 @@ function deleteQuestion(index) {
   <el-row justify="center">
     <el-row>
       <el-form
+        ref="ruleFormRef"
         class="form"
         label-position="top"
         label-width="100px"
         :model="form"
+        :rules="rules"
         style="max-width: 460px"
+        :hide-required-asterisk="true"
       >
         <h1>Create New Quiz</h1>
-        <el-form-item label="Title">
+        <el-form-item label="Title" prop="title">
           <el-input v-model="form.title" />
         </el-form-item>
-        <el-form-item label="Author">
+        <el-form-item label="Author" prop="author">
           <el-input v-model="form.author" />
         </el-form-item>
-        <el-form-item label="Description">
-          <el-input v-model="form.description" />
+        <el-form-item label="Description" prop="description">
+          <el-input type="textarea" v-model="form.description" />
         </el-form-item>
 
         <h3>Quiz Body</h3>
@@ -78,7 +122,15 @@ function deleteQuestion(index) {
               >
             </div>
           </template>
-          <el-form-item label="Question">
+          <el-form-item
+            label="Question"
+            :prop="`body[${i}].question`"
+            :rules="{
+              required: true,
+              message: 'This field is required',
+              trigger: 'blur',
+            }"
+          >
             <el-input v-model="body.question" />
           </el-form-item>
           <el-card>
@@ -89,6 +141,12 @@ function deleteQuestion(index) {
                 <el-button @click="deleteChoice(i)">Delete</el-button>
               </el-row>
               <el-form-item
+                :prop="`body[${i}].choices[${j}]`"
+                :rules="{
+                  required: true,
+                  message: 'This field is required',
+                  trigger: 'blur',
+                }"
                 v-for="(choice, j) in body.choices"
                 :key="j"
                 :label="String.fromCharCode(j + 65)"
@@ -97,7 +155,16 @@ function deleteQuestion(index) {
               </el-form-item>
             </div>
           </el-card>
-          <el-form-item class="answer" label="Answer">
+          <el-form-item
+            class="answer"
+            :prop="`body[${i}.answer]`"
+            label="Answer"
+            :rules="{
+              required: true,
+              message: 'This field is required',
+              trigger: 'change',
+            }"
+          >
             <el-select v-model="body.answer" class="m-2" placeholder="Select" size="large">
               <el-option
                 v-for="(choice, k) in body.choices"
@@ -108,10 +175,10 @@ function deleteQuestion(index) {
             </el-select>
           </el-form-item>
         </el-card>
-        <el-button size="large" @click="panteq">Add new quetion</el-button>
-        <RouterLink @click="submit" to="/">
-          <el-button size="large" type="primary">Submit new Quiz</el-button>
-        </RouterLink>
+        <el-button size="large" @click="newQuestion">Add new quetion</el-button>
+        <el-button @click="submit(ruleFormRef)" size="large" type="primary"
+          >Submit new Quiz</el-button
+        >
       </el-form>
     </el-row>
   </el-row>
