@@ -88,99 +88,97 @@ function deleteQuestion(index) {
 </script>
 <template>
   <el-row justify="center">
-    <el-row>
-      <el-form
-        ref="ruleFormRef"
-        class="form"
-        label-position="top"
-        label-width="100px"
-        :model="form"
-        :rules="rules"
-        style="max-width: 460px"
-        :hide-required-asterisk="true"
-      >
-        <h1>Create New Quiz</h1>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="form.title" />
-        </el-form-item>
-        <el-form-item label="Author" prop="author">
-          <el-input v-model="form.author" />
-        </el-form-item>
-        <el-form-item label="Description" prop="description">
-          <el-input type="textarea" v-model="form.description" />
-        </el-form-item>
+    <el-form
+      ref="ruleFormRef"
+      class="form"
+      label-position="top"
+      label-width="100px"
+      :model="form"
+      :rules="rules"
+      style="max-width: 460px"
+      :hide-required-asterisk="true"
+    >
+      <h1>Create New Quiz</h1>
+      <el-form-item label="Title" prop="title">
+        <el-input v-model="form.title" />
+      </el-form-item>
+      <el-form-item label="Author" prop="author">
+        <el-input v-model="form.author" />
+      </el-form-item>
+      <el-form-item label="Description" prop="description">
+        <el-input type="textarea" v-model="form.description" />
+      </el-form-item>
 
-        <h3>Quiz Body</h3>
-        <h4>Total question: {{ form.body.length }}</h4>
+      <h3>Quiz Body</h3>
+      <h4>Total question: {{ form.body.length }}</h4>
 
-        <el-card class="box-card" v-for="(body, i) in form.body" :key="i">
-          <template #header>
-            <div class="card-header">
-              <span>{{ `#${i + 1}` }}</span>
-              <el-button class="button" type="danger" @click="deleteQuestion(i)" text
-                >Delete question</el-button
-              >
-            </div>
-          </template>
-          <el-form-item
-            label="Question"
-            :prop="`body[${i}].question`"
-            :rules="{
-              required: true,
-              message: 'This field is required',
-              trigger: 'blur',
-            }"
-          >
-            <el-input v-model="body.question" />
-          </el-form-item>
-          <el-card>
-            <div>
-              <el-row justify="space-between">
-                <h3>Choices</h3>
-                <el-button @click="newChoice(i)">Add</el-button>
-                <el-button @click="deleteChoice(i)">Delete</el-button>
-              </el-row>
-              <el-form-item
-                :prop="`body[${i}].choices[${j}]`"
-                :rules="{
-                  required: true,
-                  message: 'This field is required',
-                  trigger: 'blur',
-                }"
-                v-for="(choice, j) in body.choices"
-                :key="j"
-                :label="String.fromCharCode(j + 65)"
-              >
-                <el-input v-model="form.body[i].choices[j]" />
-              </el-form-item>
-            </div>
-          </el-card>
-          <el-form-item
-            class="answer"
-            :prop="`body[${i}.answer]`"
-            label="Answer"
-            :rules="{
-              required: true,
-              message: 'This field is required',
-              trigger: 'change',
-            }"
-          >
-            <el-select v-model="body.answer" class="m-2" placeholder="Select" size="large">
-              <el-option
-                v-for="(choice, k) in body.choices"
-                :key="k"
-                :label="choice"
-                :value="choice"
-              />
-            </el-select>
-          </el-form-item>
-        </el-card>
-        <el-button size="large" @click="newQuestion">Add new quetion</el-button>
-        <el-button @click="submit(ruleFormRef)" size="large" type="primary"
-          >Submit new Quiz</el-button
+      <el-card class="box-card" v-for="(body, i) in form.body" :key="i">
+        <template #header>
+          <div class="card-header">
+            <span>{{ `#${i + 1}` }}</span>
+            <el-button class="button" type="danger" @click="deleteQuestion(i)" text
+              >Delete question</el-button
+            >
+          </div>
+        </template>
+        <el-form-item
+          label="Question"
+          :prop="`body[${i}].question`"
+          :rules="{
+            required: true,
+            message: 'This field is required',
+            trigger: 'blur',
+          }"
         >
-      </el-form>
-    </el-row>
+          <el-input v-model="body.question" />
+        </el-form-item>
+        <el-card>
+          <div>
+            <el-row justify="space-between">
+              <h3>Choices</h3>
+              <el-button @click="newChoice(i)">Add</el-button>
+              <el-button @click="deleteChoice(i)">Delete</el-button>
+            </el-row>
+            <el-form-item
+              :prop="`body[${i}].choices[${j}]`"
+              :rules="{
+                required: true,
+                message: 'This field is required',
+                trigger: 'blur',
+              }"
+              v-for="(choice, j) in body.choices"
+              :key="j"
+              :label="String.fromCharCode(j + 65)"
+            >
+              <el-input v-model="form.body[i].choices[j]" />
+            </el-form-item>
+          </div>
+        </el-card>
+        <el-form-item
+          class="answer"
+          :prop="`body[${i}.answer]`"
+          label="Answer"
+          :rules="{
+            required: true,
+            message: 'This field is required',
+            trigger: 'change',
+          }"
+        >
+          <el-select v-model="body.answer" class="m-2" placeholder="Select" size="large">
+            <el-option
+              v-for="(choice, k) in body.choices"
+              :key="k"
+              :label="choice"
+              :value="choice"
+            />
+          </el-select>
+        </el-form-item>
+      </el-card>
+      <el-button size="large" @click="newQuestion">Add new quetion</el-button>
+      <el-button @click="submit(ruleFormRef)" size="large" type="primary"
+        >Submit new Quiz</el-button
+      >
+    </el-form>
   </el-row>
 </template>
 

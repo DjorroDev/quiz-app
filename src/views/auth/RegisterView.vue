@@ -1,14 +1,88 @@
 <script setup>
-import { reactive } from "vue";
-import { RouterLink } from "vue-router";
+import { reactive, ref } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 
+const router = useRouter();
 const formRegister = reactive({
-  name: "",
+  username: "",
   email: "",
-  password: "",
+  pass: "",
   confirmPass: "",
 });
+
+const ruleFormRef = ref();
+const auth = getAuth();
+
+const validatePass = (rule, value, callback) => {
+  if (value === "") {
+    callback(new Error("Please input the password again"));
+  } else if (value !== formRegister.pass) {
+    callback(new Error("Password don't match"));
+  } else {
+    callback();
+  }
+};
+
+const rules = reactive({
+  username: [{ required: true, message: "Please input the username", trigger: "blur" }],
+  email: [
+    { type: "email", message: "Must be a valid email", trigger: "change" },
+    { required: true, message: "Please input the email", trigger: "blur" },
+  ],
+  pass: [
+    { required: true, message: "Please input the pass", trigger: "blur" },
+    { min: 6, message: "the password minimun is 6 character", trigger: "blur" },
+  ],
+  confirmPass: [{ validator: validatePass, trigger: "change" }],
+});
+
+const submit = (formEl) => {
+  if (!formEl) return;
+  formEl.validate((valid) => {
+    if (valid) {
+      // console.log("submit!");
+      createUserWithEmailAndPassword(auth, formRegister.email, formRegister.pass)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          updateProfile(auth.currentUser, {
+            displayName: formRegister.username,
+          });
+          console.log(user);
+          router.push("/dashboard");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage);
+          console.log(errorCode);
+        });
+    } else {
+      console.log("error submit!");
+      return false;
+    }
+  });
+};
+
+const signInWithGoogle = () => {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log(result.user);
+      router.push("/dashboard");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 </script>
+
 <template>
   <el-col justify="center" align="center">
     <h1>Register</h1>
@@ -16,21 +90,25 @@ const formRegister = reactive({
       <div class="form">
         <!-- <template #header>Register</template> -->
         <el-form
+          ref="ruleFormRef"
+          :rules="rules"
           label-position="top"
           label-width="120px"
           :model="formRegister"
           style="max-width: 400px"
+          :hide-required-asterisk="true"
+          status-icon
         >
-          <el-form-item label="Name">
-            <el-input type="name" v-model="formRegister.name" />
+          <el-form-item label="Username" prop="username">
+            <el-input type="username" v-model="formRegister.username" />
           </el-form-item>
-          <el-form-item label="Email">
+          <el-form-item label="Email" prop="email">
             <el-input type="email" v-model="formRegister.email" />
           </el-form-item>
-          <el-form-item label="Password">
-            <el-input type="password" v-model="formRegister.password" />
+          <el-form-item label="Password" prop="pass">
+            <el-input type="password" v-model="formRegister.pass" />
           </el-form-item>
-          <el-form-item label="Confirm Password">
+          <el-form-item label="Confirm Password" prop="confirmPass">
             <el-input type="password" v-model="formRegister.confirmPass" />
           </el-form-item>
           <div>
@@ -40,11 +118,13 @@ const formRegister = reactive({
               >
             </RouterLink>
           </div>
-          <el-button class="btn-form" type="primary">Register</el-button>
+          <el-button class="btn-form" @click="submit(ruleFormRef)" type="primary"
+            >Register</el-button
+          >
         </el-form>
         <el-divider class="divider">OR</el-divider>
         <h2>Google auth</h2>
-        <el-button size="large">
+        <el-button size="large" @click="signInWithGoogle()">
           <object
             data="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/24px-Google_%22G%22_Logo.svg.png"
           />

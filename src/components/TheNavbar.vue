@@ -1,12 +1,27 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { UserFilled, Menu, Tickets, Plus } from "@element-plus/icons-vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { getAuth, onAuthStateChanged, signOut } from "@firebase/auth";
 
 const route = useRoute();
+const router = useRouter();
 console.log(route.path);
 
 const urlPath = ref(route.path);
+const isLoggedIn = ref();
+
+let auth;
+onMounted(() => {
+  auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      isLoggedIn.value = true;
+    } else {
+      isLoggedIn.value = false;
+    }
+  });
+});
 
 watch(urlPath, async (newPath, oldPath) => {
   console.log(newPath);
@@ -14,6 +29,12 @@ watch(urlPath, async (newPath, oldPath) => {
 });
 
 const activeIndex = ref("/");
+
+const handleLogOut = () => {
+  signOut(auth).then(() => {
+    router.push("/");
+  });
+};
 </script>
 
 <template>
@@ -25,15 +46,6 @@ const activeIndex = ref("/");
     :ellipsis="false"
     background-color=""
   >
-    <!-- <el-dropdown size="large">
-      <el-icon class="menu-icon" :size="25"><Menu /></el-icon>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item>Login</el-dropdown-item>
-          <el-dropdown-item>Register</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown> -->
     <el-menu-item index="/">
       <el-icon :size="35"><Tickets /></el-icon>
       QUIZ
@@ -57,9 +69,15 @@ const activeIndex = ref("/");
       <template #title>
         <el-icon :size="25"><UserFilled /></el-icon>
       </template>
-      <el-menu-item index="/dashboard">Dashboard</el-menu-item>
-      <el-menu-item index="/login">Login</el-menu-item>
-      <el-menu-item index="/register">Register</el-menu-item>
+      <el-menu-item v-if="isLoggedIn" index="/dashboard">Dashboard</el-menu-item>
+      <div v-if="!isLoggedIn">
+        <el-menu-item index="/login">Login</el-menu-item>
+        <el-menu-item index="/register">Register</el-menu-item>
+      </div>
+      <div v-if="isLoggedIn">
+        <el-divider style="margin: 0 0 0 0" />
+        <el-menu-item @click="handleLogOut" index=""> Log out </el-menu-item>
+      </div>
     </el-sub-menu>
   </el-menu>
 </template>
