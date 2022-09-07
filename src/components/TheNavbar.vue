@@ -74,7 +74,8 @@ const handleLogOut = () => {
         <el-menu-item index="/login">Login</el-menu-item>
         <el-menu-item index="/register">Register</el-menu-item>
       </div>
-      <div v-if="isLoggedIn">
+      <div v-else>
+        <el-menu-item index="settings"> Settings </el-menu-item>
         <el-divider style="margin: 0 0 0 0" />
         <el-menu-item @click="handleLogOut" index=""> Log out </el-menu-item>
       </div>

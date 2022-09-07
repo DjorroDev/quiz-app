@@ -12,7 +12,7 @@ const user = getAuth().currentUser;
   <el-row justify="center">
     <h1>Dashboard</h1>
   </el-row>
-  <h4>Hello, {{ displayName }}</h4>
+  <h4>Hello, {{ user.displayName }}</h4>
   <el-tabs :stretch="true" v-model="activeName" class="demo-tabs">
     <el-tab-pane label="Your Quiz" name="first">
       <YourQuiz :user-id="user.uid" />
