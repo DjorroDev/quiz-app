@@ -49,12 +49,10 @@ const submit = (formEl) => {
     if (valid) {
       // console.log("submit!");
       createUserWithEmailAndPassword(auth, formRegister.email, formRegister.pass)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          updateProfile(auth.currentUser, {
+        .then(async () => {
+          await updateProfile(auth.currentUser, {
             displayName: formRegister.username,
           });
-          console.log(user);
           router.push("/dashboard");
         })
         .catch((error) => {

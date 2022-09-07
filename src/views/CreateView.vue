@@ -3,14 +3,15 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/firebase";
-// import { async } from "@firebase/util";
-// import {FormRules} from "element-plus";
+import { getAuth } from "@firebase/auth";
 
 const router = useRouter();
 
+const user = getAuth().currentUser;
+
 const form = reactive({
   title: "",
-  author: "",
+  author: user.displayName,
   description: "",
   body: [
     {
@@ -19,6 +20,7 @@ const form = reactive({
       question: "Example",
     },
   ],
+  userId: user.uid,
 });
 
 const ruleFormRef = ref();

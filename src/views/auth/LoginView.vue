@@ -76,7 +76,7 @@ const signInWithGoogle = () => {
             <el-input type="email" v-model="formLogin.email" required />
           </el-form-item>
           <el-form-item label="Password" prop="password">
-            <el-input type="password" v-model="formLogin.password" />
+            <el-input type="password" v-model="formLogin.password" show-password />
           </el-form-item>
           <div>
             <RouterLink to="/register">
