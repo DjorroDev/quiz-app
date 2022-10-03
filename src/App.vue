@@ -13,7 +13,11 @@ function pante() {
       <TheNavbar />
     </el-header>
     <el-main>
-      <el-page-header v-if="$route.name === 'quiz'" :content="$route.name" @back="pante" />
+      <el-page-header
+        v-if="($route.name === 'quiz') | ($route.name === 'edit quiz')"
+        :content="$route.name"
+        @back="pante"
+      />
       <RouterView />
     </el-main>
   </el-container>

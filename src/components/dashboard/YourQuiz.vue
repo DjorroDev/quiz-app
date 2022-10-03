@@ -1,12 +1,23 @@
 <script setup>
 import { ref, onMounted } from "vue";
+// import { useRouter } from "vue-router";
 import { View, Close, EditPen } from "@element-plus/icons-vue";
 import { db } from "@/firebase";
-import { collection, getDocs, query, where } from "@firebase/firestore";
+import { collection, getDocs, query, where, deleteDoc, doc } from "@firebase/firestore";
+
+// const router = useRouter();
 
 const props = defineProps({
   userId: String,
 });
+
+const deleteQuiz = async (quiz, index) => {
+  await deleteDoc(doc(db, "quizzes", quiz)).then(() => {
+    console.log("done");
+  });
+  // console.log(cards.value[index]);
+  cards.value.splice(index, 1);
+};
 
 const cards = ref([]);
 onMounted(async () => {
@@ -47,13 +58,15 @@ onMounted(async () => {
                 </RouterLink>
               </el-tooltip>
               <el-tooltip content="Edit" effect="light" placement="top">
-                <el-button type="primary" plain>
-                  <el-icon class="icon"> <EditPen /></el-icon>
-                  <!-- Edit -->
-                </el-button>
+                <RouterLink class="link" :to="`/edit/${card.id}`">
+                  <el-button type="primary" plain>
+                    <el-icon class="icon"> <EditPen /></el-icon>
+                    <!-- Edit -->
+                  </el-button>
+                </RouterLink>
               </el-tooltip>
               <el-tooltip content="Delete" effect="light" placement="top">
-                <el-button type="danger" plain>
+                <el-button type="danger" @click="deleteQuiz(card.id, i)" plain>
                   <el-icon class="icon"><Close /></el-icon>
                   <!-- Delete -->
                 </el-button>

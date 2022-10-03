@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,12 +21,20 @@ const router = createRouter({
     {
       path: '/quiz/:id',
       name: 'quiz',
-      component: () => import('../views/QuizView.vue')
+      component: () => import('../views/quiz/QuizView.vue')
     },
     {
       path: '/create',
       name: 'create quiz',
-      component: () => import('../views/CreateView.vue'),
+      component: () => import('../views/quiz/CreateView.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/edit/:id',
+      name: 'edit quiz',
+      component: () => import('../views/quiz/EditView.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -71,8 +79,8 @@ const getCurrentUser = () => {
 }
 
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)){
-    if (await getCurrentUser()){
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (await getCurrentUser()) {
       next();
     }
     else {

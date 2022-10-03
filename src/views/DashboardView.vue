@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import CreateView from "./CreateView.vue";
+import CreateView from "./quiz/CreateView.vue";
 import { getAuth } from "@firebase/auth";
 import YourQuiz from "../components/dashboard/YourQuiz.vue";
 

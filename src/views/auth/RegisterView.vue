@@ -16,6 +16,7 @@ const formRegister = reactive({
   pass: "",
   confirmPass: "",
 });
+const errMsg = ref("");
 
 const ruleFormRef = ref();
 const auth = getAuth();
@@ -56,10 +57,9 @@ const submit = (formEl) => {
           router.push("/dashboard");
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorMessage);
-          console.log(errorCode);
+          error.code == "auth/email-already-in-use"
+            ? (errMsg.value = "Error! Email already in use")
+            : (errMsg.value = error.code);
         });
     } else {
       console.log("error submit!");
@@ -86,6 +86,7 @@ const signInWithGoogle = () => {
     <h1>Register</h1>
     <el-row justify="center">
       <div class="form">
+        <el-alert v-if="errMsg" style="margin-bottom: 10px" :title="errMsg" type="error" />
         <!-- <template #header>Register</template> -->
         <el-form
           ref="ruleFormRef"
